@@ -201,6 +201,8 @@ import { cancelLimitOrders } from "../tools/jupiter/cancel_limit_orders";
 import { getOpenLimitOrders } from "../tools/jupiter/get_open_limit_orders";
 import { getLimitOrderHistory } from "../tools/jupiter/get_limit_order_history";
 
+export * from "./oraichainAgent";
+
 /**
  * Main class for interacting with Solana blockchain
  * Provides a unified interface for token operations, NFT management, trading and more

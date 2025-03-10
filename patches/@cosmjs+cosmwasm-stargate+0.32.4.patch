@@ -1,0 +1,143 @@
+diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.d.ts b/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.d.ts
+index a770785..9d6e0ff 100644
+--- a/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.d.ts
++++ b/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.d.ts
+@@ -1,5 +1,6 @@
+ import { Account, AuthExtension, BankExtension, Block, Coin, DeliverTxResponse, IndexedTx, QueryClient, SearchTxQuery, SequenceResponse, TxExtension } from "@cosmjs/stargate";
+ import { CometClient, HttpEndpoint } from "@cosmjs/tendermint-rpc";
++import { QueryAllContractStateResponse } from "cosmjs-types/cosmwasm/wasm/v1/query";
+ import { JsonObject, WasmExtension } from "./modules";
+ export interface Code {
+     readonly id: number;
+@@ -49,7 +50,7 @@ export declare class CosmWasmClient {
+      * This uses auto-detection to decide between a CometBFT 0.38, Tendermint 0.37 and 0.34 client.
+      * To set the Comet client explicitly, use `create`.
+      */
+-    static connect(endpoint: string | HttpEndpoint): Promise<CosmWasmClient>;
++    static connect(endpoint: string | HttpEndpoint, desiredHeight?: number): Promise<CosmWasmClient>
+     /**
+      * Creates an instance from a manually created Comet client.
+      * Use this to use `Comet38Client` or `Tendermint37Client` instead of `Tendermint34Client`.
+@@ -58,6 +59,7 @@ export declare class CosmWasmClient {
+     protected constructor(cometClient: CometClient | undefined);
+     protected getCometClient(): CometClient | undefined;
+     protected forceGetCometClient(): CometClient;
++    public setQueryClientWithHeight(height?: number): void;
+     protected getQueryClient(): (QueryClient & AuthExtension & BankExtension & TxExtension & WasmExtension) | undefined;
+     protected forceGetQueryClient(): QueryClient & AuthExtension & BankExtension & TxExtension & WasmExtension;
+     getChainId(): Promise<string>;
+@@ -136,5 +138,6 @@ export declare class CosmWasmClient {
+      * Promise is rejected for invalid response format.
+      */
+     queryContractSmart(address: string, queryMsg: JsonObject): Promise<JsonObject>;
++    getAllContractState(address: string, paginationKey: Uint8Array, limit?: number): Promise<QueryAllContractStateResponse>;
+     private txsQuery;
+ }
+diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.js b/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.js
+index af8341d..0da3e02 100644
+--- a/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.js
++++ b/node_modules/@cosmjs/cosmwasm-stargate/build/cosmwasmclient.js
+@@ -17,8 +17,8 @@ class CosmWasmClient {
+      * This uses auto-detection to decide between a CometBFT 0.38, Tendermint 0.37 and 0.34 client.
+      * To set the Comet client explicitly, use `create`.
+      */
+-    static async connect(endpoint) {
+-        const cometClient = await (0, tendermint_rpc_1.connectComet)(endpoint);
++    static async connect(endpoint, desiredHeight) {
++        const cometClient = await (0, tendermint_rpc_1.connectComet)(endpoint, desiredHeight);
+         return CosmWasmClient.create(cometClient);
+     }
+     /**
+@@ -35,6 +35,13 @@ class CosmWasmClient {
+             this.queryClient = stargate_1.QueryClient.withExtensions(cometClient, stargate_1.setupAuthExtension, stargate_1.setupBankExtension, modules_1.setupWasmExtension, stargate_1.setupTxExtension);
+         }
+     }
++
++    setQueryClientWithHeight(height = undefined) {
++        if (this.cometClient) {
++            this.queryClient = stargate_1.QueryClient.withExtensionsWithHeight(this.cometClient, height, stargate_1.setupAuthExtension, stargate_1.setupBankExtension, modules_1.setupWasmExtension, stargate_1.setupTxExtension);
++        }
++    }
++
+     getCometClient() {
+         return this.cometClient;
+     }
+@@ -120,12 +127,12 @@ class CosmWasmClient {
+         else if ((0, stargate_1.isSearchTxQueryArray)(query)) {
+             rawQuery = query
+                 .map((t) => {
+-                // numeric values must not have quotes https://github.com/cosmos/cosmjs/issues/1462
+-                if (typeof t.value === "string")
+-                    return `${t.key}='${t.value}'`;
+-                else
+-                    return `${t.key}=${t.value}`;
+-            })
++                    // numeric values must not have quotes https://github.com/cosmos/cosmjs/issues/1462
++                    if (typeof t.value === "string")
++                        return `${t.key}='${t.value}'`;
++                    else
++                        return `${t.key}=${t.value}`;
++                })
+                 .join(" AND ");
+         }
+         else {
+@@ -348,6 +355,31 @@ class CosmWasmClient {
+             }
+         }
+     }
++    /**
++     * Makes a smart query on the contract, returns the parsed JSON document.
++     *
++     * Promise is rejected when contract does not exist.
++     * Promise is rejected for invalid query format.
++     * Promise is rejected for invalid response format.
++     */
++    async getAllContractState(address, paginationKey, limit) {
++        try {
++            return await this.forceGetQueryClient().wasm.getAllContractState(address, paginationKey, limit);
++        }
++        catch (error) {
++            if (error instanceof Error) {
++                if (error.message.startsWith("not found: contract")) {
++                    throw new Error(`No contract found at address "${address}"`);
++                }
++                else {
++                    throw error;
++                }
++            }
++            else {
++                throw error;
++            }
++        }
++    }
+     async txsQuery(query) {
+         const results = await this.forceGetCometClient().txSearchAll({ query: query });
+         return results.txs.map((tx) => {
+diff --git a/node_modules/@cosmjs/cosmwasm-stargate/build/modules/wasm/queries.js b/node_modules/@cosmjs/cosmwasm-stargate/build/modules/wasm/queries.js
+index e5bf448..558d2d4 100644
+--- a/node_modules/@cosmjs/cosmwasm-stargate/build/modules/wasm/queries.js
++++ b/node_modules/@cosmjs/cosmwasm-stargate/build/modules/wasm/queries.js
+@@ -4,8 +4,8 @@ exports.setupWasmExtension = void 0;
+ const encoding_1 = require("@cosmjs/encoding");
+ const stargate_1 = require("@cosmjs/stargate");
+ const query_1 = require("cosmjs-types/cosmwasm/wasm/v1/query");
+-function setupWasmExtension(base) {
+-    const rpc = (0, stargate_1.createProtobufRpcClient)(base);
++function setupWasmExtension(base, height) {
++    const rpc = (0, stargate_1.createProtobufRpcClient)(base, height);
+     // Use this service to get easy typed access to query methods
+     // This cannot be used for proof verification
+     const queryService = new query_1.QueryClientImpl(rpc);
+@@ -46,10 +46,10 @@ function setupWasmExtension(base) {
+                 };
+                 return queryService.ContractHistory(request);
+             },
+-            getAllContractState: async (address, paginationKey) => {
++            getAllContractState: async (address, paginationKey, limit) => {
+                 const request = {
+                     address: address,
+-                    pagination: (0, stargate_1.createPagination)(paginationKey),
++                    pagination: (0, stargate_1.createPagination)(paginationKey, limit),
+                 };
+                 return queryService.AllContractState(request);
+             },

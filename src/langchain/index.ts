@@ -38,7 +38,7 @@ export * from "./fluxbeam";
 export * from "./wormhole";
 export * from "./okx-dex";
 
-import type { SolanaAgentKit } from "../agent";
+import type { SolanaAgentKit,OraichainAgentKit } from "../agent";
 import {
   SolanaBalanceTool,
   SolanaBalanceOtherTool,
@@ -171,6 +171,11 @@ import {
   SolanaGetOpenOrdersTool,
   SolanaGetOrderHistoryTool,
 } from "./jupiter";
+import { OraichainBalanceTool } from "./oraichain/balance";
+
+export function createOraichainTools(oraichainKit: OraichainAgentKit) {
+  return [new OraichainBalanceTool(oraichainKit)];
+}
 
 export function createSolanaTools(solanaKit: SolanaAgentKit) {
   return [
