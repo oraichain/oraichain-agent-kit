@@ -189,6 +189,8 @@ import {
 } from "../tools/elfa_ai";
 import { Chain, TokenId } from "@wormhole-foundation/sdk/dist/cjs";
 
+export * from "./oraichainAgent";
+
 /**
  * Main class for interacting with Solana blockchain
  * Provides a unified interface for token operations, NFT management, trading and more

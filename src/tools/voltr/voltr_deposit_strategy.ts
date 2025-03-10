@@ -86,6 +86,7 @@ export async function voltrDepositStrategy(
       strategy: strategy,
       assetTokenProgram,
       remainingAccounts,
+      manager: agent.wallet.publicKey,
     },
   );
 

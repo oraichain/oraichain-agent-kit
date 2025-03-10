@@ -36,7 +36,7 @@ export * from "./elfa_ai";
 export * from "./debridge";
 export * from "./fluxbeam";
 export * from "./wormhole";
-import type { SolanaAgentKit } from "../agent";
+import type { SolanaAgentKit, OraichainAgentKit } from "../agent";
 import {
   SolanaBalanceTool,
   SolanaBalanceOtherTool,
@@ -163,6 +163,11 @@ import {
   CreateWrappedTokenTool,
   GetWormholeSupportedChainsTool,
 } from "./index";
+import { OraichainBalanceTool } from "./oraichain/balance";
+
+export function createOraichainTools(oraichainKit: OraichainAgentKit) {
+  return [new OraichainBalanceTool(oraichainKit)];
+}
 
 export function createSolanaTools(solanaKit: SolanaAgentKit) {
   return [

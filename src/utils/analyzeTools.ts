@@ -44,7 +44,6 @@ function calculateLangchainTokens(tool: Tool, enc: any): number {
 }
 
 function calculateVercelTokens(tool: CoreTool, enc: any): number {
-  // @ts-expect-error for some reason, the description is not expected to exist
   const description = tool.description || "";
   // @ts-expect-error for some reason, the schema is not expected to exist
   const schemaStr = JSON.stringify(tool.schema || {});

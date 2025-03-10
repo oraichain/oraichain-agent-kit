@@ -86,6 +86,7 @@ export async function voltrWithdrawStrategy(
       strategy,
       assetTokenProgram,
       remainingAccounts,
+      manager: agent.wallet.publicKey,
     },
   );
 

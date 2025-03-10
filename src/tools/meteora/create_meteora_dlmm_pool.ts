@@ -57,9 +57,6 @@ export async function createMeteoraDlmmPool(
     hasAlphaVault,
     agent.wallet_address,
     activationPoint,
-    {
-      cluster: "mainnet-beta",
-    },
   );
 
   const initPoolTxHash = await sendTx(agent, initPoolTx.instructions, [
