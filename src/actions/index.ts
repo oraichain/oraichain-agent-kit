@@ -1,4 +1,6 @@
-import tokenBalancesAction from "./tokenBalances";
+import tokenBalancesAction, {
+  oraichainTokenBalancesAction,
+} from "./tokenBalances";
 import deployTokenAction from "./metaplex/deployToken";
 import balanceAction from "./solana/balance";
 import transferAction from "./solana/transfer";
@@ -250,6 +252,10 @@ export const ACTIONS = {
   CANCEL_LIMIT_ORDERS_ACTION: cancelLimitOrdersAction,
   GET_LIMIT_ORDER_HISTORY_ACTION: getLimitOrderHistoryAction,
   GET_OPEN_LIMIT_ORDERS_ACTION: getOpenLimitOrdersAction,
+};
+
+export const ORAICHAIN_ACTIONS = {
+  GET_NATIVE_BALANCE_ACTION: oraichainTokenBalancesAction,
 };
 
 export type { Action, ActionExample, Handler } from "../types/action";
