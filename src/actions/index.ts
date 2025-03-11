@@ -1,4 +1,6 @@
-import tokenBalancesAction from "./tokenBalances";
+import tokenBalancesAction, {
+  oraichainTokenBalancesAction,
+} from "./tokenBalances";
 import deployTokenAction from "./metaplex/deployToken";
 import balanceAction from "./solana/balance";
 import transferAction from "./solana/transfer";
@@ -234,6 +236,10 @@ export const ACTIONS = {
   CCTP_TRANSFER_ACTION: cctpTransferAction,
   CREATE_WRAPPED_TOKEN_ACTION: createWrappedTokenAction,
   TOKEN_TRANSFER_ACTION: tokenTransferAction,
+};
+
+export const ORAICHAIN_ACTIONS = {
+  GET_NATIVE_BALANCE_ACTION: oraichainTokenBalancesAction,
 };
 
 export type { Action, ActionExample, Handler } from "../types/action";

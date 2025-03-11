@@ -19,7 +19,6 @@ export class OraichainAgentKit {
   ) {}
 
   static async connect(rpcUrl: string, mnemonic: string) {
-    console.log("Connecting to Oraichain...", rpcUrl, mnemonic);
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
       prefix: ORAI,
     });
