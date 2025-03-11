@@ -31,6 +31,6 @@ export class OraichainAgentKit {
   }
 
   async getBalance(address: string, denom: string) {
-    return await getBalance(this, denom, address);
+    return this.client.getBalance(address, denom);
   }
 }

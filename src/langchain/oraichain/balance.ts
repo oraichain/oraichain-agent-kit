@@ -24,8 +24,8 @@ export class OraichainBalanceTool extends Tool {
 
       return JSON.stringify({
         status: "success",
-        address,
-        balance: coin,
+        message: `Balance of ${address} is ${coin.amount}${coin.denom}`,
+        data: { coin, address, input },
       });
     } catch (error: any) {
       return JSON.stringify({

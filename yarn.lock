@@ -8827,7 +8827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.18.2, express@npm:^4.19.2, express@npm:^4.21.0":
+"express@npm:^4.18.2, express@npm:^4.19.2, express@npm:^4.21.0, express@npm:^4.21.2":
   version: 4.21.2
   resolution: "express@npm:4.21.2"
   dependencies:
@@ -10396,6 +10396,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json-schema-to-zod@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "json-schema-to-zod@npm:2.6.0"
+  bin:
+    json-schema-to-zod: dist/cjs/cli.js
+  checksum: 10c0/7446a8400157f853b4de1a87f83808dca8c3934fd776ed67d5446700b833de0a5884fa838c67b49206a423d4ac91d3dd8c9ebeaddf4b363e731d6fbad594d4e6
+  languageName: node
+  linkType: hard
+
 "json-schema-traverse@npm:^0.4.1":
   version: 0.4.1
   resolution: "json-schema-traverse@npm:0.4.1"
@@ -11928,10 +11937,12 @@ __metadata:
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-prettier: "npm:^5.2.1"
     ethers: "npm:^6.13.5"
+    express: "npm:^4.21.2"
     flash-sdk: "npm:^2.24.3"
     form-data: "npm:^4.0.1"
     got: "npm:^14.4.6"
     husky: "npm:^9.1.7"
+    json-schema-to-zod: "npm:^2.6.0"
     langchain: "npm:^0.3.8"
     lint-staged: "npm:^15.3.0"
     openai: "npm:^4.77.0"
