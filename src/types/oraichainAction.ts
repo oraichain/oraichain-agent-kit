@@ -1,3 +1,4 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import { OraichainAgentKit } from "../agent";
 import { z } from "zod";
 

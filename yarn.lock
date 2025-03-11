@@ -5799,7 +5799,7 @@ express-rate-limit@^7.5.0:
   resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-7.5.0.tgz#6a67990a724b4fbbc69119419feef50c51e8b28f"
   integrity sha512-eB5zbQh5h+VenMPM3fh+nw1YExi5nMr6HUCR62ELSP11huvxm/Uir1H1QEyTkk5QX6A58pX6NmaTMceKZ0Eodg==
 
-express@^4.18.2, express@^4.19.2, express@^4.21.0:
+express@^4.18.2, express@^4.19.2, express@^4.21.0, express@^4.21.2:
   version "4.21.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.21.2.tgz#cf250e48362174ead6cea4a566abef0162c1ec32"
   integrity sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==
@@ -6906,6 +6906,11 @@ json-buffer@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.1.tgz#9338802a30d3b6605fbe0613e094008ca8c05a13"
   integrity sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==
+
+json-schema-to-zod@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/json-schema-to-zod/-/json-schema-to-zod-2.6.0.tgz#7c6bd5de73ecfcfafd58ed841431cbc99315a317"
+  integrity sha512-6sFZqOzHZeON8g2ZW5HJ114Hb/FffNCjWh8dgulJaKFkUqKCEWZAzF4+g07SQpfBZF7HXemwedtdLypZzmnVpQ==
 
 json-schema-traverse@^0.4.1:
   version "0.4.1"

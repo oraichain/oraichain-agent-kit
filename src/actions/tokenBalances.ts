@@ -5,7 +5,6 @@ import { z } from "zod";
 import { get_token_balance } from "../tools";
 import type { Action as OraichainAction } from "../types/oraichainAction";
 import { getBalance } from "../tools/oraichain";
-import { add } from "@raydium-io/raydium-sdk-v2";
 
 const tokenBalancesAction: Action = {
   name: "TOKEN_BALANCE_ACTION",
@@ -128,15 +127,17 @@ export const oraichainTokenBalancesAction: OraichainAction = {
     ],
   ],
   schema: z.object({
-    walletAddress: z.string().optional(),
+    address: z.string().describe("The address of the wallet"),
+    denom: z.string().describe("The denom of the token"),
   }),
   handler: async (agent: OraichainAgentKit, input) => {
-    const balance = await getBalance(agent, input.address, input.denom);
+    const balance = await agent.getBalance(input.address, input.denom);
 
     return {
       status: "success",
       address: input.address,
       balance,
+      input,
     };
   },
 };
