@@ -96,7 +96,9 @@ app.listen(8080, async () => {
     );
 
     const finalActions = {
-      GET: ORAICHAIN_ACTIONS.GET_NATIVE_BALANCE_ACTION,
+      GET_BALANCE: ORAICHAIN_ACTIONS.GET_NATIVE_BALANCE_ACTION,
+      TRANSFER: ORAICHAIN_ACTIONS.TRANSFER_TOKEN_ACTION,
+      DELEGATION: ORAICHAIN_ACTIONS.GET_DELEGATION_ACTION,
     };
 
     server = createMcpServer(finalActions, agent, {

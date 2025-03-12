@@ -1,9 +1,22 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import {
+  setupWasmExtension,
+  SigningCosmWasmClient,
+  WasmExtension,
+} from "@cosmjs/cosmwasm-stargate";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { Coin, GasPrice } from "@cosmjs/stargate";
-import { getBalance } from "../tools/oraichain";
+import {
+  BankExtension,
+  Coin,
+  GasPrice,
+  MintExtension,
+  QueryClient,
+  setupBankExtension,
+  setupMintExtension,
+  setupStakingExtension,
+  StakingExtension,
+} from "@cosmjs/stargate";
 import { ORAI } from "@oraichain/common";
+import { Comet38Client } from "@cosmjs/tendermint-rpc";
 /**
  * Main class for interacting with Oraichain blockchain
  * Provides a unified interface for token operations, NFT management, trading and more
@@ -16,6 +29,11 @@ export class OraichainAgentKit {
   private constructor(
     public readonly wallet: DirectSecp256k1HdWallet,
     public readonly client: SigningCosmWasmClient,
+    public readonly queryClient: QueryClient &
+      BankExtension &
+      StakingExtension &
+      WasmExtension &
+      MintExtension,
   ) {}
 
   static async connect(rpcUrl: string, mnemonic: string) {
@@ -27,10 +45,37 @@ export class OraichainAgentKit {
       wallet,
       { gasPrice: GasPrice.fromString("0.001" + ORAI) },
     );
-    return new OraichainAgentKit(wallet, client);
+    const comet = await Comet38Client.connect(rpcUrl);
+    const queryClient = QueryClient.withExtensions(
+      comet,
+      setupBankExtension,
+      setupStakingExtension,
+      setupWasmExtension,
+      setupMintExtension,
+    );
+    return new OraichainAgentKit(wallet, client, queryClient);
   }
 
   async getBalance(address: string, denom: string) {
     return this.client.getBalance(address, denom);
+  }
+
+  async getDelegation(address: string, validatorAddress: string) {
+    return this.queryClient.staking.delegation(address, validatorAddress);
+  }
+
+  async transfer(
+    toAddress: string,
+    amount: Coin,
+    fromAccountIndex: number = 0,
+  ) {
+    const wallet = await this.wallet.getAccounts();
+    const result = await this.client.sendTokens(
+      wallet[fromAccountIndex].address,
+      toAddress,
+      [amount],
+      "auto",
+    );
+    return result.transactionHash;
   }
 }
