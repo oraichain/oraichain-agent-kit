@@ -102,3 +102,12 @@ Then, start asking questions to the agent, for example:
 # you can choose a different server
 SERVER_PORT=9000 npx @modelcontextprotocol/inspector
 ```
+
+3. Connect to the MCP server via Inspector
+
+For Stdio:
+
+![Stdio](image-1.png)
+
+For SSE:
+![SSE](image.png)
