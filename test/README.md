@@ -1,5 +1,11 @@
 # Test Oraichain MCP client & server
 
+## Install dependencies
+
+```bash
+npm install -g tsx
+```
+
 ## Update .env file
 
 ```bash
@@ -30,6 +36,12 @@ query balance of wallet orai14h0n2nlfrfz8tn9usfyjrxqd23fhj9a0ec0pm7 with denom o
 
 # Test Oraichain SSE MCP client & server
 
+## Install dependencies
+
+```bash
+npm install -g tsx vite-node
+```
+
 ## Update .env file
 
 ```bash
@@ -49,7 +61,7 @@ tsx test/oraichainMCPRemoteServer.ts
 ## Run the MCP client
 
 ```bash
-node test/oraichainSSEMCPClient.mjs
+vite-node test/oraichainSSEMCPClient.ts
 ```
 
 # Run MCP Server Inspector for debugging

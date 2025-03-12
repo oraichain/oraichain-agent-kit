@@ -1,4 +1,8 @@
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import {
+  JSONRPCMessage,
+  JSONRPCResponse,
+} from "@modelcontextprotocol/sdk/types.js";
 
 async function main() {
   // const receivedMessages = [];
@@ -7,14 +11,15 @@ async function main() {
   );
 
   // Listen for SSE events
-  transport.onmessage = (event) => {
+  transport.onmessage = (_event: JSONRPCMessage | JSONRPCResponse) => {
+    const event = _event as JSONRPCResponse;
     console.log("Received SSE message:", event.result);
   };
 
   await transport.start();
   console.log("transport started");
 
-  const testMessage = {
+  const testMessage: JSONRPCMessage = {
     jsonrpc: "2.0",
     id: "test-1",
     method: "tools/call",
