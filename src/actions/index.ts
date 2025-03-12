@@ -1,6 +1,4 @@
-import tokenBalancesAction, {
-  oraichainTokenBalancesAction,
-} from "./tokenBalances";
+import { oraichainTokenBalancesAction } from "./oraichain/tokenBalances";
 import deployTokenAction from "./metaplex/deployToken";
 import balanceAction from "./solana/balance";
 import transferAction from "./solana/transfer";
@@ -115,6 +113,9 @@ import getWormholeSupportedChainsAction from "./wormhole/getSupportedChains";
 import cctpTransferAction from "./wormhole/cctpTransfer";
 import createWrappedTokenAction from "./wormhole/createWrappedToken";
 import tokenTransferAction from "./wormhole/tokenTransfer";
+import tokenBalancesAction from "./tokenBalances";
+import { oraichainDelegationAction } from "./oraichain/delegate";
+import oraichainTokenTransferAction from "./oraichain/transfer";
 
 export const ACTIONS = {
   GET_INFO_ACTION: getInfoAction,
@@ -240,6 +241,8 @@ export const ACTIONS = {
 
 export const ORAICHAIN_ACTIONS = {
   GET_NATIVE_BALANCE_ACTION: oraichainTokenBalancesAction,
+  GET_DELEGATION_ACTION: oraichainDelegationAction,
+  TRANSFER_TOKEN_ACTION: oraichainTokenTransferAction,
 };
 
 export type { Action, ActionExample, Handler } from "../types/action";
