@@ -18,13 +18,12 @@ const oraichainTokenTransferAction: OraichainAction = {
         output: {
           status: "success",
           data: {
-            recipent: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
-            amount: {
-              amount: "100",
-              denom: "orai",
+            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+            value: {
+              fromAddress: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
+              toAddress: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
+              amount: [{ denom: "orai", amount: "100" }],
             },
-            transactionHash:
-              "21C01CA4F468898CC1288844E3F7287C2CBA7F529AB57294F1FCAF11FACC695E",
           },
         },
         explanation: "Transfer 100 ORAI to the wallet",
@@ -32,6 +31,7 @@ const oraichainTokenTransferAction: OraichainAction = {
     ],
   ],
   schema: z.object({
+    senderAddress: z.string().describe("The sender address"),
     recipient: z.string().describe("The recipient address"),
     amount: z.object({
       amount: z.string().describe("The amount of tokens to transfer"),
@@ -39,15 +39,15 @@ const oraichainTokenTransferAction: OraichainAction = {
     }),
   }),
   handler: async (agent: OraichainAgentKit, input) => {
-    const transactionHash = await agent.transfer(input.recipient, input.amount);
+    const message = await agent.transfer(
+      input.senderAddress,
+      input.recipient,
+      input.amount,
+    );
 
     return {
       status: "success",
-      data: {
-        recipent: input.recipient,
-        amount: input.amount,
-        transactionHash,
-      },
+      data: message,
     };
   },
 };

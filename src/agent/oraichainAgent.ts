@@ -64,18 +64,14 @@ export class OraichainAgentKit {
     return this.queryClient.staking.delegation(address, validatorAddress);
   }
 
-  async transfer(
-    toAddress: string,
-    amount: Coin,
-    fromAccountIndex: number = 0,
-  ) {
-    const wallet = await this.wallet.getAccounts();
-    const result = await this.client.sendTokens(
-      wallet[fromAccountIndex].address,
-      toAddress,
-      [amount],
-      "auto",
-    );
-    return result.transactionHash;
+  async transfer(senderAddress: string, toAddress: string, amount: Coin) {
+    return {
+      typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+      value: {
+        fromAddress: senderAddress,
+        toAddress,
+        amount: [amount],
+      },
+    };
   }
 }

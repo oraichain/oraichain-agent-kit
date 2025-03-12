@@ -102,7 +102,7 @@ class MCPClient {
     const response = await this.agent.invoke({
       messages: [new HumanMessage(query)],
     });
-    console.debug("response: ", response.messages);
+    // console.debug("response: ", response.messages);
 
     // Process response and handle tool calls
     const finalText: any[] = [];
@@ -112,16 +112,18 @@ class MCPClient {
         if (msg.tool_calls && msg.tool_calls.length > 0) {
           // Handle tool calls
           for (const toolCall of msg.tool_calls) {
-            console.debug("tool call: ", toolCall);
+            // console.debug("tool call: ", toolCall);
             const result = await this.mcp.callTool({
               name: toolCall.name,
               arguments: toolCall.args,
             });
 
+            // TODO: use result to sign & send transaction here
+
             const response = await this.agent.invoke({
               messages: [new HumanMessage(JSON.stringify(result.content))],
             });
-            console.debug("response: ", response);
+            // console.debug("response: ", response);
             finalText.push(
               response.messages[response.messages.length - 1].content,
             );
