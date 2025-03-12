@@ -30,7 +30,7 @@ app.get("/sse", async (req, res) => {
     transports.set(connectionId, transport);
 
     await server.connect(transport);
-    res.write(`data: {"connectionId": "${connectionId}"}\n\n`);
+    // res.write(`data: {"connectionId": "${connectionId}"}\n\n`);
     console.log(`SSE connection established: ${connectionId}`);
 
     req.on("close", () => {
