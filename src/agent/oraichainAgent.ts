@@ -1,4 +1,5 @@
 import {
+  CosmWasmClient,
   setupWasmExtension,
   SigningCosmWasmClient,
   WasmExtension,
@@ -27,8 +28,7 @@ import { Comet38Client } from "@cosmjs/tendermint-rpc";
  */
 export class OraichainAgentKit {
   private constructor(
-    public readonly wallet: DirectSecp256k1HdWallet,
-    public readonly client: SigningCosmWasmClient,
+    public readonly client: CosmWasmClient,
     public readonly queryClient: QueryClient &
       BankExtension &
       StakingExtension &
@@ -36,15 +36,8 @@ export class OraichainAgentKit {
       MintExtension,
   ) {}
 
-  static async connect(rpcUrl: string, mnemonic: string) {
-    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
-      prefix: ORAI,
-    });
-    const client = await SigningCosmWasmClient.connectWithSigner(
-      rpcUrl,
-      wallet,
-      { gasPrice: GasPrice.fromString("0.001" + ORAI) },
-    );
+  static async connect(rpcUrl: string) {
+    const client = await SigningCosmWasmClient.connect(rpcUrl);
     const comet = await Comet38Client.connect(rpcUrl);
     const queryClient = QueryClient.withExtensions(
       comet,
@@ -53,7 +46,7 @@ export class OraichainAgentKit {
       setupWasmExtension,
       setupMintExtension,
     );
-    return new OraichainAgentKit(wallet, client, queryClient);
+    return new OraichainAgentKit(client, queryClient);
   }
 
   async getBalance(address: string, denom: string) {

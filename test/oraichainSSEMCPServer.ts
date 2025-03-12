@@ -90,10 +90,7 @@ app.post("/messages", async (req, res) => {
 
 app.listen(8080, async () => {
   try {
-    const agent = await OraichainAgentKit.connect(
-      process.env.RPC_URL!,
-      process.env.MNEMONIC!,
-    );
+    const agent = await OraichainAgentKit.connect(process.env.RPC_URL!);
 
     const finalActions = {
       GET_BALANCE: ORAICHAIN_ACTIONS.GET_NATIVE_BALANCE_ACTION,
