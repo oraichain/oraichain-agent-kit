@@ -36,10 +36,7 @@ async function initializeAgent() {
       apiKey: process.env.MISTRAL_API_KEY!,
     });
 
-    const solanaAgent = await OraichainAgentKit.connect(
-      process.env.RPC_URL!,
-      process.env.MNEMONIC!,
-    );
+    const solanaAgent = await OraichainAgentKit.connect(process.env.RPC_URL!);
 
     const tools = createOraichainTools(solanaAgent);
 
