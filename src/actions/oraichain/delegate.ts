@@ -44,13 +44,17 @@ export const oraichainDelegationAction: OraichainAction = {
     validatorAddress: z.string().describe("The validator address"),
   }),
   handler: async (agent: OraichainAgentKit, input) => {
-    const balance = await agent.getBalance(input.address, input.denom);
+    const response = await agent.getDelegation(
+      input.address,
+      input.validatorAddress,
+    );
 
     return {
       status: "success",
-      address: input.address,
-      balance,
-      input,
+      data: {
+        delegation: response.delegationResponse?.delegation,
+        balance: response.delegationResponse?.balance,
+      },
     };
   },
 };
