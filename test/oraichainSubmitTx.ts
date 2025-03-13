@@ -14,10 +14,12 @@ import {
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { ORAI } from "@oraichain/common";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { toBase64 } from "@cosmjs/encoding";
+import { toBase64, toHex } from "@cosmjs/encoding";
 import { setTimeout } from "timers/promises";
 import assert from "assert";
 import { makeSignDoc, Secp256k1HdWallet, StdSignDoc } from "@cosmjs/amino";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { sha256 } from "@cosmjs/crypto";
 
 (async () => {
   // setup SSE Server for testing
@@ -29,6 +31,7 @@ import { makeSignDoc, Secp256k1HdWallet, StdSignDoc } from "@cosmjs/amino";
 
   await testSignAndBroadcastDirectTx(sseClient);
   await testSignAndBroadcastAminoTx(sseClient);
+  await testSignAndBroadcastTxBytes(sseClient);
   // close transport & connection
   await sseClient.close();
 })();
@@ -158,4 +161,56 @@ async function testSignAndBroadcastAminoTx(sseClient: Client) {
   assert(txHashInfo !== null);
   assert(txHashInfo.code === 0);
   assert(txHashInfo.hash === txHash);
+}
+
+async function testSignAndBroadcastTxBytes(sseClient: Client) {
+  // setup wallet to sign
+  const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
+    process.env.MNEMONIC!,
+    { prefix: "orai" },
+  );
+  const accounts = await wallet.getAccounts();
+
+  const client = await SigningCosmWasmClient.connectWithSigner(
+    process.env.RPC_URL!,
+    wallet,
+    {
+      gasPrice: GasPrice.fromString("0.0001orai"),
+      registry: new Registry([...defaultRegistryTypes, ...wasmTypes]),
+    },
+  );
+
+  const transferMessageResult = await sseClient.callTool({
+    name: "TOKEN_TRANSFER_ACTION",
+    arguments: {
+      senderAddress: accounts[0].address,
+      recipient: accounts[0].address,
+      amount: { amount: "1", denom: ORAI } as Coin,
+    },
+  });
+
+  const message = JSON.parse(
+    (transferMessageResult.content as any)[0].text,
+  ).data;
+
+  const txRaw = await client.sign(
+    accounts[0].address,
+    [message],
+    { amount: [{ amount: "0", denom: ORAI }], gas: "20000000" },
+    "",
+  );
+  const txBytes = TxRaw.encode(txRaw).finish();
+  const txHashData = await sseClient.callTool({
+    name: "BROADCAST_SIGNED_TX_ACTION",
+    arguments: {
+      signedTx: toBase64(txBytes),
+    },
+  });
+  const txHash = JSON.parse((txHashData.content as any)[0].text).data.txHash;
+  await setTimeout(2000);
+  const txHashInfo = await client.getTx(txHash);
+  assert(txHashInfo !== null);
+  assert(txHashInfo.code === 0);
+  assert(txHashInfo.hash === txHash);
+  assert(txHashInfo.hash.toLowerCase() === toHex(sha256(txBytes)));
 }
