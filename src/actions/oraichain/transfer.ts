@@ -16,6 +16,7 @@ const oraichainTokenTransferAction: OraichainAction = {
       {
         input: {
           senderAddress: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
+          publicKey: "A/3Pt2PXYxBKG7BpXwYuTUHUZqMBQ9ZO/C5Kcm79kHzj",
           recipient: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
           amount: {
             amount: "100",
@@ -40,6 +41,7 @@ const oraichainTokenTransferAction: OraichainAction = {
   schema: z.object({
     senderAddress: z.string().describe("The sender address"),
     recipient: z.string().describe("The recipient address"),
+    publicKey: z.string().describe("The public key of the sender"),
     amount: z.object({
       amount: z.string().describe("The amount of tokens to transfer"),
       denom: z.string().describe("The denom of the token to transfer"),
@@ -48,6 +50,7 @@ const oraichainTokenTransferAction: OraichainAction = {
   handler: async (agent: OraichainAgentKit, input) => {
     const message = await agent.transfer(
       input.senderAddress,
+      input.publicKey,
       input.recipient,
       input.amount,
     );
