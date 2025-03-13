@@ -76,6 +76,7 @@ const oraichainBroadcastSignedTxFromSignedBytesAndSignature: OraichainAction = {
     };
   },
 };
+
 const oraichainBroadcastSignedTxFromStdDocAndSignature: OraichainAction = {
   name: "BROADCAST_SIGNED_TX_FROM_STD_SIGNDOC_AND_SIGNATURE_ACTION",
   similes: [
@@ -85,45 +86,9 @@ const oraichainBroadcastSignedTxFromStdDocAndSignature: OraichainAction = {
   description: `Broadcast a signed transaction to the network using signed std sign doc and signature.`,
   examples: [],
   schema: z.object({
-    signedDoc: z.object({
-      chain_id: z.string().describe("The chain id"),
-      account_number: z.string().or(z.number()).describe("The account number"),
-      sequence: z.string().or(z.number()).describe("The sequence number"),
-      fee: z.object({
-        amount: z.array(
-          z.object({
-            denom: z.string().describe("The denom of the fee"),
-            amount: z.string().describe("The amount of the fee"),
-          }),
-        ),
-        gas: z.string().describe("The gas for the transaction"),
-        granter: z.string().optional().describe("The granter of the fee"),
-        payer: z.string().optional().describe("The grantee of the fee"),
-      }),
-      msgs: z.array(
-        z.object({
-          type: z.string().describe("The type of the message"),
-          value: z
-            .any()
-            .describe("The value of the message, in cosmos amino format"),
-        }),
-      ),
-      memo: z.string().describe("The memo for the transaction"),
-      timeout_height: z
-        .string()
-        .optional()
-        .describe("The timeout height for the transaction"),
-    }),
+    signedDoc: z.string().describe("The signed std sign doc in base64 format"),
     signature: z
-      .object({
-        pub_key: z.object({
-          type: z.string().describe("The type of the pubkey"),
-          value: z.any().describe("The value of the pubkey in base64 format"),
-        }),
-        signature: z
-          .string()
-          .describe("The signature for the transaction in base64 format"),
-      })
+      .string()
       .describe("The signature for the transaction in base64 format"),
   }),
   handler: async (agent: OraichainAgentKit, input) => {
@@ -140,8 +105,33 @@ const oraichainBroadcastSignedTxFromStdDocAndSignature: OraichainAction = {
     };
   },
 };
+
+const oraichainBroadcastSignDocBase64: OraichainAction = {
+  name: "BROADCAST_SIGN_DOC_BASE64_ACTION",
+  similes: ["Broadcast a sign doc base64 to the network"],
+  description: `Broadcast a sign doc base64 to the network.`,
+  examples: [],
+  schema: z.object({
+    signDocBase64: z.string().describe("The sign doc base64"),
+    signature: z.string().describe("The signature"),
+  }),
+  handler: async (agent: OraichainAgentKit, input) => {
+    const txHash = await agent.broadcastSignDocBase64(
+      input.signDocBase64,
+      input.signature,
+    );
+    return {
+      status: "success",
+      data: {
+        txHash,
+      },
+    };
+  },
+};
+
 export {
   oraichainBroadcastSignedTx,
   oraichainBroadcastSignedTxFromSignedBytesAndSignature,
   oraichainBroadcastSignedTxFromStdDocAndSignature,
+  oraichainBroadcastSignDocBase64,
 };

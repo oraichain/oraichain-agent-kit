@@ -125,6 +125,7 @@ import tokenBalancesAction from "./tokenBalances";
 import { oraichainDelegationAction } from "./oraichain/delegate";
 import oraichainTokenTransferAction from "./oraichain/transfer";
 import {
+  oraichainBroadcastSignDocBase64,
   oraichainBroadcastSignedTx,
   oraichainBroadcastSignedTxFromSignedBytesAndSignature,
   oraichainBroadcastSignedTxFromStdDocAndSignature,
@@ -264,6 +265,7 @@ export const ORAICHAIN_ACTIONS = {
   GET_NATIVE_BALANCE_ACTION: oraichainTokenBalancesAction,
   GET_DELEGATION_ACTION: oraichainDelegationAction,
   TRANSFER_TOKEN_ACTION: oraichainTokenTransferAction,
+  BROADCAST_SIGN_DOC_BASE64_ACTION: oraichainBroadcastSignDocBase64,
   BROADCAST_SIGNED_TX_ACTION: oraichainBroadcastSignedTx,
   BROADCAST_SIGNED_TX_FROM_SIGNED_BYTES_AND_SIGNATURE_ACTION:
     oraichainBroadcastSignedTxFromSignedBytesAndSignature,
