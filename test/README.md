@@ -11,7 +11,6 @@ npm install -g tsx
 ```bash
 MISTRAL_API_KEY=
 RPC_URL=
-MNEMONIC=
 ```
 
 In the root directory, run:
@@ -47,7 +46,6 @@ npm install -g tsx vite-node
 ```bash
 MISTRAL_API_KEY=
 RPC_URL=
-MNEMONIC=
 ```
 
 In the root directory, run:
@@ -71,7 +69,6 @@ vite-node test/oraichainSSEMCPClient.ts
 ```bash
 MISTRAL_API_KEY=
 RPC_URL=
-MNEMONIC=
 ```
 
 In the root directory, run:
