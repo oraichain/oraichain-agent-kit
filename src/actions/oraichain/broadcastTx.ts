@@ -13,14 +13,12 @@ const oraichainBroadcastSignedTx: OraichainAction = {
     [
       {
         input: {
-          signedTx:
-            "1fc68f69f0f695b77ff1bc0fe239a17dad188640974ba4dc245b7679b5166bc6",
+          signedTx: "H8aPafD2lbd/8bwP4jmhfa0YhkCXS6TcJFt2ebUWa8Y=",
         },
         output: {
           status: "success",
           data: {
-            txHash:
-              "1fc68f69f0f695b77ff1bc0fe239a17dad188640974ba4dc245b7679b5166bc6",
+            txHash: "H8aPafD2lbd/8bwP4jmhfa0YhkCXS6TcJFt2ebUWa8Y=",
           },
         },
         explanation: "Transfer 100 ORAI to the wallet",
@@ -28,7 +26,7 @@ const oraichainBroadcastSignedTx: OraichainAction = {
     ],
   ],
   schema: z.object({
-    signedTx: z.string().describe("The signed transaction in hex format"),
+    signedTx: z.string().describe("The signed transaction in base64 format"),
   }),
   handler: async (agent: OraichainAgentKit, input) => {
     const txHash = await agent.broadcastTxSync(input.signedTx);

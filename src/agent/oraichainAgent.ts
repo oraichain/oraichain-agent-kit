@@ -6,18 +6,13 @@ import {
   WasmExtension,
   wasmTypes,
 } from "@cosmjs/cosmwasm-stargate";
-import {
-  DirectSecp256k1HdWallet,
-  makeAuthInfoBytes,
-  Registry,
-} from "@cosmjs/proto-signing";
+import { makeAuthInfoBytes, Registry } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   BankExtension,
   Coin,
   createDefaultAminoConverters,
   defaultRegistryTypes,
-  GasPrice,
   MintExtension,
   QueryClient,
   setupBankExtension,
@@ -25,9 +20,8 @@ import {
   setupStakingExtension,
   StakingExtension,
 } from "@cosmjs/stargate";
-import { Binary, ORAI } from "@oraichain/common";
+import { Binary } from "@oraichain/common";
 import { Comet38Client } from "@cosmjs/tendermint-rpc";
-import { HexString } from "@pythnetwork/hermes-client";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { StdSignDoc, StdSignature } from "@cosmjs/amino";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -103,8 +97,8 @@ export class OraichainAgentKit {
    * @param signedTx - Transaction to submit, in base64 format
    * @returns
    */
-  async broadcastTxSync(signedTx: HexString) {
-    return this.client.broadcastTxSync(Buffer.from(signedTx, "hex"));
+  async broadcastTxSync(signedTx: Binary) {
+    return this.client.broadcastTxSync(fromBase64(signedTx));
   }
 
   /**
