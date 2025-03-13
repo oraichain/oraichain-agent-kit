@@ -40,7 +40,10 @@ export function jsonSchemaToZod(
       case "object":
         zodType = z.object({}); // Basic object, could be recursive
         break;
-      // Add more type mappings as needed
+      case "array":
+        zodType = z.array(z.any()); // Basic array, could be recursive
+        // Add more type mappings as needed
+        break;
       default:
         throw new Error(`Unsupported type: ${propSchema.type}`);
     }
