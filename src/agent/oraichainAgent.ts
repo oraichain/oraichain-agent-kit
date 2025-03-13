@@ -33,7 +33,12 @@ import {
 import { Binary } from "@oraichain/common";
 import { Comet38Client } from "@cosmjs/tendermint-rpc";
 import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { StdSignDoc, StdSignature, encodeSecp256k1Pubkey, encodeSecp256k1Signature } from "@cosmjs/amino";
+import {
+  StdSignDoc,
+  StdSignature,
+  encodeSecp256k1Pubkey,
+  encodeSecp256k1Signature,
+} from "@cosmjs/amino";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import { Int53 } from "@cosmjs/math";
@@ -169,6 +174,9 @@ export class OraichainAgentKit {
 
   buildTxRawBuffer(signDoc: SignDoc, publicKey: string, signature: string) {
     const pubkeyBuffer = Buffer.from(publicKey, "base64");
+    console.log(fromBase64(signature).length);
+    console.log(publicKey);
+    console.log(fromBase64(publicKey).length);
     const stdSignature = encodeSecp256k1Signature(
       pubkeyBuffer,
       fromBase64(signature),
