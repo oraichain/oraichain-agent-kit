@@ -33,7 +33,7 @@ import {
 import { Binary } from "@oraichain/common";
 import { Comet38Client } from "@cosmjs/tendermint-rpc";
 import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { StdSignDoc, StdSignature, encodeSecp256k1Pubkey } from "@cosmjs/amino";
+import { StdSignDoc, StdSignature, encodeSecp256k1Pubkey, encodeSecp256k1Signature } from "@cosmjs/amino";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import { Int53 } from "@cosmjs/math";
@@ -167,18 +167,27 @@ export class OraichainAgentKit {
     return makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
   }
 
-  buildTxRawBuffer(signDoc: SignDoc, signature: string) {
+  buildTxRawBuffer(signDoc: SignDoc, publicKey: string, signature: string) {
+    const pubkeyBuffer = Buffer.from(publicKey, "base64");
+    const stdSignature = encodeSecp256k1Signature(
+      pubkeyBuffer,
+      fromBase64(signature),
+    );
     const txRaw = TxRaw.fromPartial({
       bodyBytes: signDoc.bodyBytes,
       authInfoBytes: signDoc.authInfoBytes,
-      signatures: [fromBase64(signature)],
+      signatures: [fromBase64(stdSignature.signature)],
     });
     return TxRaw.encode(txRaw).finish();
   }
 
-  async broadcastSignDocBase64(signDocBase64: string, signature: string) {
+  async broadcastSignDocBase64(
+    signDocBase64: string,
+    publicKey: string,
+    signature: string,
+  ) {
     const signDocObj = SignDoc.decode(Buffer.from(signDocBase64, "base64"));
-    const txBytes = this.buildTxRawBuffer(signDocObj, signature);
+    const txBytes = this.buildTxRawBuffer(signDocObj, publicKey, signature);
     return this.client.broadcastTxSync(txBytes);
   }
   /**

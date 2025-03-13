@@ -113,11 +113,13 @@ const oraichainBroadcastSignDocBase64: OraichainAction = {
   examples: [],
   schema: z.object({
     signDocBase64: z.string().describe("The sign doc base64"),
+    publicKey: z.string().describe("The public key"),
     signature: z.string().describe("The signature"),
   }),
   handler: async (agent: OraichainAgentKit, input) => {
     const txHash = await agent.broadcastSignDocBase64(
       input.signDocBase64,
+      input.publicKey,
       input.signature,
     );
     return {
