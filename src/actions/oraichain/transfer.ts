@@ -14,7 +14,14 @@ const oraichainTokenTransferAction: OraichainAction = {
   examples: [
     [
       {
-        input: {},
+        input: {
+          senderAddress: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
+          recipient: "orai1f5nyvnx5ks738d5ys7pwa0evc42v6ff043h6d2",
+          amount: {
+            amount: "100",
+            denom: "orai",
+          },
+        },
         output: {
           status: "success",
           data: {

@@ -92,13 +92,7 @@ app.listen(8080, async () => {
   try {
     const agent = await OraichainAgentKit.connect(process.env.RPC_URL!);
 
-    const finalActions = {
-      GET_BALANCE: ORAICHAIN_ACTIONS.GET_NATIVE_BALANCE_ACTION,
-      TRANSFER: ORAICHAIN_ACTIONS.TRANSFER_TOKEN_ACTION,
-      DELEGATION: ORAICHAIN_ACTIONS.GET_DELEGATION_ACTION,
-    };
-
-    server = createMcpServer(finalActions, agent, {
+    server = createMcpServer(ORAICHAIN_ACTIONS, agent, {
       name: "oraichain-agent",
       version: "0.0.1",
     });

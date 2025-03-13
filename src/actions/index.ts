@@ -124,6 +124,11 @@ import getOpenLimitOrdersAction from "./jupiter/getOpenLimitOrders";
 import tokenBalancesAction from "./tokenBalances";
 import { oraichainDelegationAction } from "./oraichain/delegate";
 import oraichainTokenTransferAction from "./oraichain/transfer";
+import {
+  oraichainBroadcastSignedTx,
+  oraichainBroadcastSignedTxFromSignedBytesAndSignature,
+  oraichainBroadcastSignedTxFromStdDocAndSignature,
+} from "./oraichain/broadcastTx";
 
 export const ACTIONS = {
   GET_INFO_ACTION: getInfoAction,
@@ -259,6 +264,11 @@ export const ORAICHAIN_ACTIONS = {
   GET_NATIVE_BALANCE_ACTION: oraichainTokenBalancesAction,
   GET_DELEGATION_ACTION: oraichainDelegationAction,
   TRANSFER_TOKEN_ACTION: oraichainTokenTransferAction,
+  BROADCAST_SIGNED_TX_ACTION: oraichainBroadcastSignedTx,
+  BROADCAST_SIGNED_TX_FROM_SIGNED_BYTES_AND_SIGNATURE_ACTION:
+    oraichainBroadcastSignedTxFromSignedBytesAndSignature,
+  BROADCAST_SIGNED_TX_FROM_STD_DOC_AND_SIGNATURE_ACTION:
+    oraichainBroadcastSignedTxFromStdDocAndSignature,
 };
 
 export type { Action, ActionExample, Handler } from "../types/action";
