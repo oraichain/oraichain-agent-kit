@@ -32,7 +32,7 @@ import {
 } from "@cosmjs/stargate";
 import { Binary } from "@oraichain/common";
 import { Comet38Client } from "@cosmjs/tendermint-rpc";
-import { Fee, SignDoc, TxBody, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { StdSignDoc, StdSignature, encodeSecp256k1Pubkey } from "@cosmjs/amino";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { Any } from "cosmjs-types/google/protobuf/any";
@@ -116,7 +116,7 @@ export class OraichainAgentKit {
       "",
     );
     return {
-      signDoc: makeSignBytes(signDoc),
+      signDoc: Buffer.from(makeSignBytes(signDoc)).toString("base64"),
     };
   }
 
@@ -137,7 +137,8 @@ export class OraichainAgentKit {
     memo: string = "",
     timeoutHeight?: bigint,
   ) {
-    const { accountNumber, sequence } = await this.client.getSequence(senderAddress);
+    const { accountNumber, sequence } =
+      await this.client.getSequence(senderAddress);
     const chainId = await this.client.getChainId();
     const pubkeyBuffer = Buffer.from(publicKey, "base64");
     const pubkey = encodePubkey(encodeSecp256k1Pubkey(pubkeyBuffer));
