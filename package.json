@@ -35,7 +35,7 @@
     "@bonfida/spl-name-service": "^3.0.7",
     "@cks-systems/manifest-sdk": "0.1.59",
     "@coral-xyz/anchor": "0.29",
-    "@cosmjs/amino": "^0.32.4",
+    "@cosmjs/amino": "^0.33.0",
     "@cosmjs/cosmwasm-stargate": "^0.32.4",
     "@cosmjs/crypto": "^0.32.4",
     "@cosmjs/proto-signing": "^0.32.4",
@@ -119,5 +119,6 @@
     "rpc-websockets": "7.5.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
-  }
+  },
+  "packageManager": "yarn@4.5.3+sha256.dddc0b96ad2dca8d56a5302b56bf3cbf8210654474a6bf88877da61e866f3d46"
 }
