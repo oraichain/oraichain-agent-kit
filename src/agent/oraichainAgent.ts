@@ -6,24 +6,34 @@ import {
   WasmExtension,
   wasmTypes,
 } from "@cosmjs/cosmwasm-stargate";
-import { makeAuthInfoBytes, Registry } from "@cosmjs/proto-signing";
+import {
+  EncodeObject,
+  encodePubkey,
+  makeAuthInfoBytes,
+  makeSignBytes,
+  makeSignDoc,
+  Registry,
+} from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   BankExtension,
+  calculateFee,
   Coin,
   createDefaultAminoConverters,
   defaultRegistryTypes,
+  GasPrice,
   MintExtension,
   QueryClient,
   setupBankExtension,
   setupMintExtension,
   setupStakingExtension,
   StakingExtension,
+  StdFee,
 } from "@cosmjs/stargate";
 import { Binary } from "@oraichain/common";
 import { Comet38Client } from "@cosmjs/tendermint-rpc";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { StdSignDoc, StdSignature } from "@cosmjs/amino";
+import { Fee, SignDoc, TxBody, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { StdSignDoc, StdSignature, encodeSecp256k1Pubkey } from "@cosmjs/amino";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import { Int53 } from "@cosmjs/math";
@@ -43,6 +53,7 @@ type PubkeyType =
  * @property {SigningCosmWasmClient} client - Client instance for interacting with the blockchain
  */
 export class OraichainAgentKit {
+  public gasMultiplier: number = 1.4;
   private constructor(
     public readonly client: CosmWasmClient,
     public readonly queryClient: QueryClient &
@@ -81,17 +92,94 @@ export class OraichainAgentKit {
     return this.queryClient.staking.delegation(address, validatorAddress);
   }
 
-  async transfer(senderAddress: string, toAddress: string, amount: Coin) {
+  async transfer(
+    senderAddress: string,
+    publickey: string,
+    toAddress: string,
+    amount: Coin,
+  ) {
+    const stdFee = calculateFee(1000000, GasPrice.fromString("0.002orai"));
+    const signDoc = await this.buildSignDoc(
+      senderAddress,
+      publickey,
+      [
+        {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: {
+            fromAddress: senderAddress,
+            toAddress,
+            amount: [amount],
+          },
+        },
+      ],
+      stdFee,
+      "",
+    );
     return {
-      typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-      value: {
-        fromAddress: senderAddress,
-        toAddress,
-        amount: [amount],
-      },
+      signDoc: makeSignBytes(signDoc),
     };
   }
 
+  /**
+   * Build a sign doc for a transaction
+   * @param senderAddress - Address of the sender
+   * @param publicKey - Public key of the sender
+   * @param messages - Messages to include in the transaction
+   * @param memo - Memo for the transaction
+   * @param fee - Fee for the transaction
+   * @param timeoutHeight - Timeout height for the transaction
+   */
+  async buildSignDoc(
+    senderAddress: string,
+    publicKey: string,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo: string = "",
+    timeoutHeight?: bigint,
+  ) {
+    const { accountNumber, sequence } = await this.client.getSequence(senderAddress);
+    const chainId = await this.client.getChainId();
+    const pubkeyBuffer = Buffer.from(publicKey, "base64");
+    const pubkey = encodePubkey(encodeSecp256k1Pubkey(pubkeyBuffer));
+    // Create a proper TxBody object
+    const txBodyObj = {
+      typeUrl: "/cosmos.tx.v1beta1.TxBody",
+      value: {
+        messages: messages,
+        memo: memo,
+        timeoutHeight: timeoutHeight,
+      },
+    };
+
+    // Use fromPartial to create a valid TxBody and then encode it
+    const txBodyBytes = this.registry.encode(txBodyObj);
+
+    // Handle fee based on its type
+    const gasLimit = Int53.fromString(fee.gas.toString()).toNumber();
+    const authInfoBytes = makeAuthInfoBytes(
+      [{ pubkey, sequence }],
+      fee.amount,
+      gasLimit,
+      fee.granter,
+      fee.payer,
+    );
+    return makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
+  }
+
+  buildTxRawBuffer(signDoc: SignDoc, signature: string) {
+    const txRaw = TxRaw.fromPartial({
+      bodyBytes: signDoc.bodyBytes,
+      authInfoBytes: signDoc.authInfoBytes,
+      signatures: [fromBase64(signature)],
+    });
+    return TxRaw.encode(txRaw).finish();
+  }
+
+  async broadcastSignDocBase64(signDocBase64: string, signature: string) {
+    const signDocObj = SignDoc.decode(Buffer.from(signDocBase64, "base64"));
+    const txBytes = this.buildTxRawBuffer(signDocObj, signature);
+    return this.client.broadcastTxSync(txBytes);
+  }
   /**
    * Submit a transaction to the blockchain
    * @param signedTx - Transaction to submit, in base64 format

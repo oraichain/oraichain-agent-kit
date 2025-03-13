@@ -35,7 +35,7 @@
     "@bonfida/spl-name-service": "^3.0.7",
     "@cks-systems/manifest-sdk": "0.1.59",
     "@coral-xyz/anchor": "0.29",
-    "@cosmjs/amino": "^0.32.4",
+    "@cosmjs/amino": "^0.33.0",
     "@cosmjs/cosmwasm-stargate": "^0.32.4",
     "@cosmjs/crypto": "^0.32.4",
     "@cosmjs/proto-signing": "^0.32.4",
