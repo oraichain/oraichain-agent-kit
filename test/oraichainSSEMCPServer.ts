@@ -88,7 +88,8 @@ app.post("/messages", async (req, res) => {
   }
 });
 
-app.listen(8080, async () => {
+const port = +process.env.PORT! || 8080;
+app.listen(port, "0.0.0.0", async () => {
   try {
     const agent = await OraichainAgentKit.connect(process.env.RPC_URL!);
 
@@ -96,7 +97,7 @@ app.listen(8080, async () => {
       name: "oraichain-agent",
       version: "0.0.1",
     });
-    console.log("Server listening on port 8080");
+    console.log(`Server listening on port ${port}`);
   } catch (error) {
     console.error("Server initialization failed:", error);
     process.exit(1);
